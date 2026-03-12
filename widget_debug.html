@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Debug widget Grist</title>
+  <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+  <style>
+    body { font-family: monospace; padding: 16px; background: #1e1e1e; color: #d4d4d4; }
+    h3 { color: #9cdcfe; }
+    #status { color: #ce9178; margin-bottom: 8px; }
+    #data { background: #252526; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h3>🔍 Debug Grist Widget</h3>
+  <div id="status">En attente de grist.ready()...</div>
+  <div id="data">Pas encore de données.</div>
+
+  <script>
+    const status = document.getElementById('status');
+    const data = document.getElementById('data');
+
+    status.textContent = 'Appel de grist.ready()...';
+
+    grist.ready({ requiredAccess: 'read table' });
+
+    status.textContent = 'grist.ready() appelé — en attente de onRecord...';
+
+    grist.onRecord(function(record) {
+      if (!record) {
+        status.textContent = '⚠️ onRecord appelé mais record est null/undefined';
+        return;
+      }
+      status.textContent = '✅ onRecord reçu !';
+      data.textContent = JSON.stringify(record, null, 2);
+    });
+  </script>
+</body>
+</html>
