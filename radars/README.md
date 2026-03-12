@@ -24,15 +24,25 @@ Visualise des scores sur plusieurs axes sous forme de graphes radar (toile d'ara
   - Colonnes à inclure (cochées parmi toutes les colonnes de la table)
 - Ajout, suppression et réorganisation des graphes depuis le panneau ⚙️
 - Mise à jour automatique au clic sur un enregistrement
+- **Mode présentation** : ouvre un nouvel onglet dédié (`presenter.html`) avec navigation clavier et plein écran
+
+### Fichiers
+
+| Fichier | Rôle |
+|---|---|
+| `widget_radar.html` | Widget à intégrer dans Grist |
+| `presenter.html` | Page de présentation plein écran (ouverte automatiquement) |
+
+Les deux fichiers doivent être hébergés au **même endroit**.
 
 ### Installation
 
-#### 1. Héberger le fichier
+#### 1. Héberger les fichiers
 
-Le widget doit être servi depuis un hébergeur qui autorise l'intégration en iframe. [Netlify](https://netlify.com) fonctionne parfaitement et est gratuit :
+Les widgets doivent être servis depuis un hébergeur qui autorise l'intégration en iframe. [Netlify](https://netlify.com) fonctionne parfaitement et est gratuit :
 
-1. Télécharge `widget_radar.html`
-2. Sur Netlify : **Add new site → Deploy manually** → glisse-dépose le fichier
+1. Télécharge `widget_radar.html` et `presenter.html`
+2. Sur Netlify : **Add new site → Deploy manually** → glisse-dépose un dossier contenant les deux fichiers
 3. Netlify te fournit une URL du type `https://ton-site.netlify.app/widget_radar.html`
 
 > ⚠️ GitHub Pages et jsDelivr ne fonctionnent pas car ils bloquent l'intégration en iframe.
@@ -40,7 +50,7 @@ Le widget doit être servi depuis un hébergeur qui autorise l'intégration en i
 #### 2. Ajouter le widget dans Grist
 
 1. Dans ton document Grist, ajoute un **widget personnalisé** (Custom Widget)
-2. Colle l'URL Netlify dans le champ URL
+2. Colle l'URL Netlify de `widget_radar.html` dans le champ URL
 3. Configure le **"Sélectionner par"** sur ta table de données
 4. Règle l'**accès aux données** sur **"Lire la table"**
 5. Clique sur un enregistrement → les graphes s'affichent
@@ -48,6 +58,14 @@ Le widget doit être servi depuis un hébergeur qui autorise l'intégration en i
 #### 3. Configurer les graphes
 
 Clique sur **⚙️** en haut à droite du widget pour ouvrir le panneau de configuration.
+
+#### 4. Mode présentation
+
+Clique sur **▶ Présentation** pour ouvrir `presenter.html` dans un nouvel onglet avec :
+
+- Navigation **← →** au clavier entre les enregistrements
+- Bouton **⛶ Plein écran** natif
+- Compteur de position (**3 / 7**)
 
 ### Structure attendue des données
 
@@ -61,6 +79,8 @@ Une ligne = un enregistrement (ex. un élève). Les scores sont dans des colonne
 | … | … |
 
 Les noms de colonnes sont entièrement configurables depuis le panneau ⚙️.
+
+Un fichier CSV de démonstration (`eleves_scores.csv`) est disponible pour tester rapidement avec des données fictives.
 
 ### Dépendances
 
