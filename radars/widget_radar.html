@@ -51,6 +51,42 @@
     }
     canvas { max-height: 200px; }
 
+    #btn-present, #btn-dark {
+      background: none; border: 1px solid #cbd5e0; cursor: pointer;
+      font-size: 0.78rem; padding: 4px 10px; border-radius: 6px;
+      color: #718096; margin-right: 4px; transition: all 0.15s;
+    }
+    #btn-present:hover, #btn-dark:hover { background: #edf2f7; }
+    body.presentation #btn-present {
+      background: #4299e1; color: white; border-color: #4299e1;
+    }
+    body.dark #btn-dark {
+      background: #4299e1; color: white; border-color: #4299e1;
+    }
+
+    #nav-bar {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 10px;
+      background: #2d3748;
+      border-top: 1px solid #4a5568;
+      position: sticky; bottom: 0; z-index: 10;
+    }
+    .btn-nav {
+      background: #4a5568; border: none; cursor: pointer;
+      color: white; font-size: 1.4rem; width: 44px; height: 44px;
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; transition: background 0.15s;
+      user-select: none;
+    }
+    .btn-nav:hover { background: #4299e1; }
+    .btn-nav:disabled { background: #2d3748; color: #4a5568; cursor: default; }
+    #nav-counter {
+      font-size: 0.85rem; color: #a0aec0; min-width: 60px; text-align: center;
+    }
+
     /* ── OVERLAY CONFIG ── */
     #overlay {
       display: none;
@@ -228,10 +264,19 @@
     <h2 id="titre" style="display:none"></h2>
     <div id="aucun">Sélectionnez un élève dans la table.</div>
   </div>
-  <button id="btn-config" title="Configuration">⚙️</button>
+  <div style="display:flex;align-items:center;gap:4px;">
+    <a id="btn-present" href="presenter.html" target="_blank" title="Mode présentation" style="text-decoration:none">▶ Présentation</a>
+    <button id="btn-config" title="Configuration">⚙️</button>
+  </div>
 </div>
 
 <div id="grilles"></div>
+
+<div id="nav-bar">
+  <button class="btn-nav" id="btn-prev" title="Précédent (←)">‹</button>
+  <span id="nav-counter">— / —</span>
+  <button class="btn-nav" id="btn-next" title="Suivant (→)">›</button>
+</div>
 
 <div id="overlay">
   <div id="panel">
@@ -544,6 +589,79 @@ document.getElementById('overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('overlay')) closePanel();
 });
 
+// ─── MODE PRÉSENTATION + DARK ──────────────────────────────────────
+let allRecords = [];
+let currentIndex = 0;
+
+function setPresentation(active) {
+  presentationMode = active;
+  document.body.classList.toggle('presentation', active);
+  document.getElementById('btn-present').textContent = active ? '⏹ Quitter' : '▶ Présentation';
+  if (active) {
+    // Plein écran
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  } else {
+    // Quitter le plein écran
+    if (document.fullscreenElement) {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  }
+  updateNav();
+}
+
+// Synchroniser si l'utilisateur quitte le plein écran manuellement (Échap navigateur)
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement && presentationMode) {
+    presentationMode = false;
+    document.body.classList.remove('presentation');
+    document.getElementById('btn-present').textContent = '▶ Présentation';
+    updateNav();
+  }
+});
+
+
+function updatePresenterLink() {
+  try {
+    if (allRecords.length === 0) return;
+    const payload = { config, records: allRecords, index: currentIndex };
+    const json    = JSON.stringify(payload);
+    const b64     = btoa(unescape(encodeURIComponent(json)));
+    document.getElementById('btn-present').href = 'presenter.html#' + b64;
+  } catch(e) { console.warn('Erreur encodage URL', e); }
+}
+
+function updateNav() {
+  const counter = document.getElementById('nav-counter');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  if (allRecords.length === 0) {
+    counter.textContent = '— / —';
+    btnPrev.disabled = true;
+    btnNext.disabled = true;
+  } else {
+    counter.textContent = `${currentIndex + 1} / ${allRecords.length}`;
+    btnPrev.disabled = currentIndex <= 0;
+    btnNext.disabled = currentIndex >= allRecords.length - 1;
+  }
+}
+
+function goTo(index) {
+  if (index < 0 || index >= allRecords.length) return;
+  currentIndex = index;
+  renderCharts(allRecords[currentIndex]);
+  updateNav();
+  updatePresenterLink();
+}
+
+document.getElementById('btn-present').addEventListener('mousedown', updatePresenterLink);
+document.getElementById('btn-prev').addEventListener('click', () => goTo(currentIndex - 1));
+document.getElementById('btn-next').addEventListener('click', () => goTo(currentIndex + 1));
+
+
+
 // ─── GRIST API ────────────────────────────────────────────────────
 grist.ready({ requiredAccess: 'read table' });
 
@@ -555,11 +673,22 @@ grist.onOptions(options => {
   if (currentRecord) renderCharts(currentRecord);
 });
 
+grist.onRecords(records => {
+  if (!records || records.length === 0) return;
+  allRecords = records;
+  if (allColumns.length === 0) allColumns = Object.keys(records[0]);
+  if (Object.keys(charts).length === 0) rebuildGrid();
+  updateNav();
+  updatePresenterLink();
+});
+
 grist.onRecord(record => {
   if (!record) return;
-  if (allColumns.length === 0) allColumns = Object.keys(record);
-  if (Object.keys(charts).length === 0) rebuildGrid();
+  const idx = allRecords.findIndex(r => r.id === record.id);
+  if (idx >= 0) currentIndex = idx;
+  updateNav();
   renderCharts(record);
+  updatePresenterLink();
 });
 </script>
 </body>
