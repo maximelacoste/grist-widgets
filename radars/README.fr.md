@@ -10,6 +10,8 @@ Widgets personnalisés pour [Grist](https://www.getgrist.com/), librement réuti
 
 Visualise des scores sur plusieurs axes sous forme de graphes radar (toile d'araignée), directement dans Grist. Idéal pour analyser des profils d'élèves, des évaluations multi-critères, ou tout jeu de données à plusieurs dimensions.
 
+![Capture d'écran du widget radar](screenshot.png)
+
 ### Fonctionnalités
 
 - Affichage de **N graphes radar** (sans limite) organisés en grille 2 colonnes

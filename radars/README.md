@@ -10,6 +10,8 @@ Custom widgets for [Grist](https://www.getgrist.com/), freely reusable and adapt
 
 Displays scores on multiple axes as radar (spider) charts, directly inside Grist. Ideal for analysing student profiles, multi-criteria assessments, or any multi-dimensional dataset.
 
+![Widget screenshot](screenshot.png)
+
 ### Features
 
 - Display **N radar charts** (unlimited) arranged in a 2-column grid

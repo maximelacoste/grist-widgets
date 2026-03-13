@@ -277,7 +277,6 @@
   </div>
   <div id="topbar-actions">
     <button id="btn-present" class="btn-topbar"></button>
-    <button id="btn-lang" class="btn-topbar" title="Switch language / Changer de langue">FR/EN</button>
     <button id="btn-config" class="btn-icon" title=""></button>
   </div>
 </div>
@@ -346,7 +345,6 @@ const I18N = {
     noData:          'Graphe radar non disponible.',
     defaultGraphe:   i => `Graphe ${i + 1}`,
     grapheTitle:     cat => `${cat.emoji} ${cat.title}`,
-    langToggle:      'EN',
     datasetLabel:    'Score',
   },
   en: {
@@ -378,7 +376,6 @@ const I18N = {
     noData:          'Radar chart unavailable.',
     defaultGraphe:   i => `Chart ${i + 1}`,
     grapheTitle:     cat => `${cat.emoji} ${cat.title}`,
-    langToggle:      'FR',
     datasetLabel:    'Score',
   }
 };
@@ -400,7 +397,6 @@ function applyLang() {
   document.getElementById('btn-add').textContent       = t.btnAdd;
   document.getElementById('btn-save').textContent      = t.btnSave;
   document.getElementById('btn-cancel').textContent    = t.btnCancel;
-  document.getElementById('btn-lang').textContent      = t.langToggle;
 
   const navBar = document.getElementById('nav-bar');
   navBar.setAttribute('aria-label', t.navRegion);
@@ -769,12 +765,6 @@ document.getElementById('overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('overlay')) closePanel();
 });
 
-// ── Bouton langue ──────────────────────────────────────────────
-document.getElementById('btn-lang').addEventListener('click', async () => {
-  lang = lang === 'fr' ? 'en' : 'fr';
-  applyLang();
-  try { await grist.setOption('lang', lang); } catch(e) {}
-});
 
 // ── Bouton présentation ───────────────────────────────────────
 document.getElementById('btn-present').addEventListener('click', () => {
@@ -821,9 +811,6 @@ grist.onOptions(options => {
   if (options) {
     if (options.radarConfig) {
       try { config = JSON.parse(options.radarConfig); } catch(e) {}
-    }
-    if (options.lang && (options.lang === 'fr' || options.lang === 'en')) {
-      lang = options.lang;
     }
   }
   applyLang();
