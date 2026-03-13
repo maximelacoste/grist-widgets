@@ -1,106 +1,119 @@
 # Grist Widgets
 
-Widgets personnalisés pour [Grist](https://www.getgrist.com/), librement réutilisables et adaptables.
+> 🇫🇷 [Lire en français](README.fr.md)
+
+Custom widgets for [Grist](https://www.getgrist.com/), freely reusable and adaptable.
 
 ---
 
-## 📡 widget_radar.html — Graphes radar multi-catégories
+## 📡 widget_radar.html — Multi-category radar charts
 
-Visualise des scores sur plusieurs axes sous forme de graphes radar (toile d'araignée), directement dans Grist. Idéal pour analyser des profils d'élèves, des évaluations multi-critères, ou tout autre jeu de données à plusieurs dimensions.
+Displays scores on multiple axes as radar (spider) charts, directly inside Grist. Ideal for analysing student profiles, multi-criteria assessments, or any multi-dimensional dataset.
 
-### Aperçu
+### Features
 
-![Capture d'écran du widget radar](screenshot.png)
+- Display **N radar charts** (unlimited) arranged in a 2-column grid
+- **Persistent configuration** via Grist widget options (saved between sessions)
+- Per chart, configure:
+  - Title and emoji
+  - Outline colour
+  - Grid colour
+  - Maximum scale (e.g. 0–5, 0–10…)
+  - Columns to include (checked from the full column list)
+- Add, remove and reorder charts from the ⚙️ panel
+- Auto-update on record click
+- **Presentation mode**: opens a dedicated tab (`presenter.html`) with keyboard navigation and full-screen support
+- **Built-in language toggle** (FR / EN): preference stored in Grist widget options
 
-### Fonctionnalités
+### Files
 
-- Affichage de **N graphes radar** (sans limite) organisés en grille 2 colonnes
-- **Configuration persistante** via les options du widget Grist (sauvegardée entre les sessions)
-- Pour chaque graphe, réglage de :
-  - Titre et emoji
-  - Couleur du contour de l'étoile
-  - Couleur du repère de fond (grille)
-  - Échelle maximale (ex : 0–5, 0–10…)
-  - Colonnes à inclure (cochées parmi toutes les colonnes de la table)
-- Ajout, suppression et réorganisation des graphes depuis le panneau ⚙️
-- Mise à jour automatique au clic sur un enregistrement
-- **Mode présentation** : ouvre un nouvel onglet dédié (`presenter.html`) avec navigation clavier et plein écran
-
-### Fichiers
-
-| Fichier | Rôle |
+| File | Purpose |
 |---|---|
-| `widget_radar.html` | Widget à intégrer dans Grist |
-| `presenter.html` | Page de présentation plein écran (ouverte automatiquement) |
+| `widget_radar.html` | Widget to embed in Grist |
+| `presenter.html` | Full-screen presentation page (opened automatically) |
 
-Les deux fichiers doivent être hébergés au **même endroit**.
+Both files must be hosted **at the same location**.
 
 ### Installation
 
-#### 1. Héberger les fichiers
+#### 1. Host the files
 
-Les widgets doivent être servis depuis un hébergeur qui autorise l'intégration en iframe. [Netlify](https://netlify.com) fonctionne parfaitement et est gratuit :
+Widgets must be served from a host that allows iframe embedding. [Netlify](https://netlify.com) works perfectly and is free:
 
-1. Télécharge `widget_radar.html` et `presenter.html`
-2. Sur Netlify : **Add new site → Deploy manually** → glisse-dépose un dossier contenant les deux fichiers
-3. Netlify te fournit une URL du type `https://ton-site.netlify.app/widget_radar.html`
+1. Download `widget_radar.html` and `presenter.html`
+2. On Netlify: **Add new site → Deploy manually** → drag-and-drop a folder containing both files
+3. Netlify gives you a URL like `https://your-site.netlify.app/widget_radar.html`
 
-> ⚠️ GitHub Pages et jsDelivr ne fonctionnent pas car ils bloquent l'intégration en iframe.
+> ⚠️ GitHub Pages and jsDelivr do not work as they block iframe embedding.
 
-#### 2. Ajouter le widget dans Grist
+#### 2. Add the widget in Grist
 
-1. Dans ton document Grist, ajoute un **widget personnalisé** (Custom Widget)
-2. Colle l'URL Netlify de `widget_radar.html` dans le champ URL
-3. Configure le **"Sélectionner par"** sur ta table de données
-4. Règle l'**accès aux données** sur **"Lire la table"**
-5. Clique sur un enregistrement → les graphes s'affichent
+1. In your Grist document, add a **Custom Widget**
+2. Paste the Netlify URL of `widget_radar.html` in the URL field
+3. Set **"Select by"** to your data table
+4. Set **Data access** to **"Read table"**
+5. Click on a record → charts appear
 
-#### 3. Configurer les graphes
+#### 3. Configure the charts
 
-Clique sur **⚙️** en haut à droite du widget pour ouvrir le panneau de configuration.
+Click **⚙️** at the top right of the widget to open the configuration panel.
 
-#### 4. Mode présentation
+#### 4. Switch language
 
-Clique sur **▶ Présentation** pour ouvrir `presenter.html` dans un nouvel onglet avec :
+Click **FR/EN** to toggle between French and English. The preference is stored in Grist widget options and persists across sessions.
 
-- Navigation **← →** au clavier entre les enregistrements
-- Bouton **⛶ Plein écran** natif
-- Compteur de position (**3 / 7**)
+#### 5. Presentation mode
 
-### Structure attendue des données
+Click **▶ Present** to open `presenter.html` in a new tab with:
 
-Une ligne = un enregistrement (ex. un élève). Les scores sont dans des colonnes numériques, idéalement préfixées par catégorie :
+- **← →** keyboard navigation between records
+- Native **full-screen** button
+- Position counter (**3 / 7**)
 
-| Colonne | Description |
+### Expected data structure
+
+One row = one record (e.g. a student). Scores are in numeric columns, ideally prefixed by category:
+
+| Column | Description |
 |---|---|
-| `lang_comprehension` | Score de compréhension (Langage) |
-| `math_calcul` | Score de calcul (Mathématiques) |
-| `compor_attention` | Score d'attention (Comportement) |
+| `lang_comprehension` | Comprehension score (Language) |
+| `math_calcul` | Calculation score (Maths) |
+| `compor_attention` | Attention score (Behaviour) |
 | … | … |
 
-Les noms de colonnes sont entièrement configurables depuis le panneau ⚙️.
+Column names are fully configurable from the ⚙️ panel.
 
-Un fichier CSV de démonstration (`eleves_scores.csv`) est disponible pour tester rapidement avec des données fictives.
+A demo CSV file (`eleves_scores.csv`) is available for quick testing with sample data.
 
-### Dépendances
+### Accessibility
 
-- [Chart.js 4.4](https://www.chartjs.org/) — chargé via CDN
-- [Grist Plugin API](https://support.getgrist.com/widget-custom/) — chargé via CDN
+This widget targets W3C/WCAG 2.1 AA compliance:
+- All icon buttons have explicit `aria-label` attributes
+- The configuration panel uses `role="dialog"` with focus trap, Escape key support, and focus restoration
+- Accordion headers are keyboard-navigable (Enter / Space)
+- Canvas elements have `role="img"` and `aria-label`
+- All interactive elements have visible `:focus-visible` styles
+- Labels are programmatically associated with their inputs via `for`/`id`
+
+### Dependencies
+
+- [Chart.js 4.4](https://www.chartjs.org/) — loaded via CDN
+- [Grist Plugin API](https://support.getgrist.com/widget-custom/) — loaded via CDN
 
 ---
 
 ## 🔧 widget_debug.html
 
-Widget utilitaire pour diagnostiquer la communication entre Grist et un widget personnalisé. Affiche le contenu brut de l'enregistrement sélectionné au format JSON. Utile pour vérifier que le "Sélectionner par" et l'accès aux données sont bien configurés.
+Utility widget to diagnose communication between Grist and a custom widget. Displays the raw content of the selected record as JSON. Useful for verifying that "Select by" and data access are correctly configured.
 
 ---
 
 ## Licence
 
-[MIT](LICENSE) — libre d'utilisation, de modification et de redistribution, avec mention de l'auteur original.
+[MIT](LICENSE) — free to use, modify and redistribute, with credit to the original author.
 
 ---
 
-## Contribuer
+## Contributing
 
-Les contributions sont bienvenues ! N'hésite pas à ouvrir une *issue* ou une *pull request* pour proposer des améliorations ou de nouveaux widgets.
+Contributions are welcome! Feel free to open an *issue* or a *pull request* to suggest improvements or new widgets.
